@@ -14,7 +14,7 @@ router.post('/login', (req, res) => {
 });
 
 router.post('/logout', (req, res) => {
-    req.session.destroy();
+    req.session = null;
     res.json({ success: true, message: 'Logged out successfully', data: {} });
 });
 

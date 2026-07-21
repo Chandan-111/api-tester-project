@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
-const session = require('express-session');
+const session = require('cookie-session');
 const path = require('path');
 require('dotenv').config();
 
@@ -38,10 +38,9 @@ app.use(logger);
 
 // Session
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'supersecret_api_learning',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+    name: 'session',
+    keys: [process.env.SESSION_SECRET || 'supersecret_api_learning'],
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
 // Static files
