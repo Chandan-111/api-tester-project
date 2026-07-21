@@ -5,8 +5,8 @@ router.post('/login', (req, res) => {
     const { username, password } = req.body;
     
     // Hardcoded credentials as requested
-    if (username === 'admin' && password === 'admin123') {
-        req.session.user = { username: 'admin' };
+    if (username === 'Chandan' && password === 'Gotilla') {
+        req.session.user = { username: 'Chandan' };
         res.json({ success: true, message: 'Logged in successfully', data: {} });
     } else {
         res.status(401).json({ success: false, message: 'Invalid credentials', errors: [] });
