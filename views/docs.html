@@ -152,6 +152,67 @@
             </div>
         </div>
 
+        <!-- EXACT JSON BODIES FOR EACH TABLE -->
+        <h2 class="mb-2 mt-2">Table Reference (JSON Bodies)</h2>
+        <p class="mb-2">When making a <strong>POST</strong> or <strong>PUT</strong> request, you MUST send only the exact columns belonging to that table. Do not send the <code>success</code> or <code>data</code> wrappers. Here is the exact JSON body you can copy-paste for every table:</p>
+        
+        <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+            <div class="card">
+                <h3>/users</h3>
+                <pre style="padding: 1rem; font-size: 0.85rem;"><button class="copy-btn" style="top:0.2rem; right:0.2rem; font-size:0.7rem; padding: 0.2rem 0.5rem;" onclick="copyCode(this)">Copy</button><code>{
+  "name": "Jane Smith",
+  "email": "jane@example.com"
+}</code></pre>
+            </div>
+            <div class="card">
+                <h3>/products</h3>
+                <pre style="padding: 1rem; font-size: 0.85rem;"><button class="copy-btn" style="top:0.2rem; right:0.2rem; font-size:0.7rem; padding: 0.2rem 0.5rem;" onclick="copyCode(this)">Copy</button><code>{
+  "name": "Mechanical Keyboard",
+  "price": 89.99,
+  "description": "RGB Keyboard"
+}</code></pre>
+            </div>
+            <div class="card">
+                <h3>/orders</h3>
+                <pre style="padding: 1rem; font-size: 0.85rem;"><button class="copy-btn" style="top:0.2rem; right:0.2rem; font-size:0.7rem; padding: 0.2rem 0.5rem;" onclick="copyCode(this)">Copy</button><code>{
+  "user_id": 1,
+  "total": 129.50,
+  "status": "pending"
+}</code></pre>
+            </div>
+            <div class="card">
+                <h3>/employees</h3>
+                <pre style="padding: 1rem; font-size: 0.85rem;"><button class="copy-btn" style="top:0.2rem; right:0.2rem; font-size:0.7rem; padding: 0.2rem 0.5rem;" onclick="copyCode(this)">Copy</button><code>{
+  "name": "Sarah Palmer",
+  "position": "Developer",
+  "department": "Engineering"
+}</code></pre>
+            </div>
+            <div class="card">
+                <h3>/books</h3>
+                <pre style="padding: 1rem; font-size: 0.85rem;"><button class="copy-btn" style="top:0.2rem; right:0.2rem; font-size:0.7rem; padding: 0.2rem 0.5rem;" onclick="copyCode(this)">Copy</button><code>{
+  "title": "1984",
+  "author": "George Orwell",
+  "year": 1949
+}</code></pre>
+            </div>
+            <div class="card">
+                <h3>/students</h3>
+                <pre style="padding: 1rem; font-size: 0.85rem;"><button class="copy-btn" style="top:0.2rem; right:0.2rem; font-size:0.7rem; padding: 0.2rem 0.5rem;" onclick="copyCode(this)">Copy</button><code>{
+  "name": "Adam Sand",
+  "grade": "A",
+  "major": "Computer Science"
+}</code></pre>
+            </div>
+            <div class="card">
+                <h3>/tasks</h3>
+                <pre style="padding: 1rem; font-size: 0.85rem;"><button class="copy-btn" style="top:0.2rem; right:0.2rem; font-size:0.7rem; padding: 0.2rem 0.5rem;" onclick="copyCode(this)">Copy</button><code>{
+  "title": "Buy groceries",
+  "completed": false
+}</code></pre>
+            </div>
+        </div>
+
         <!-- POST -->
         <div class="endpoint-card">
             <div class="endpoint-header">
