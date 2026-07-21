@@ -28,6 +28,7 @@ global.serverStats = {
 };
 
 // Middleware
+app.set('trust proxy', 1); // Trust Vercel proxy for secure cookies
 app.use(helmet({ contentSecurityPolicy: false })); // Disabled CSP for easy inline scripts
 app.use(cors());
 app.use(compression());
@@ -40,7 +41,10 @@ app.use(logger);
 app.use(session({
     name: 'session',
     keys: [process.env.SESSION_SECRET || 'supersecret_api_learning'],
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    httpOnly: true
 }));
 
 // Static files
