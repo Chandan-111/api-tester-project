@@ -20,6 +20,9 @@ const viewRoutes = require('./routes/viewRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Required for Vercel/proxied environments to trust secure cookies
+app.set('trust proxy', 1);
+
 // Global Stats Store (in-memory for simple display)
 global.serverStats = {
     startTime: Date.now(),
@@ -28,7 +31,6 @@ global.serverStats = {
 };
 
 // Middleware
-app.set('trust proxy', 1); // Trust Vercel proxy for secure cookies
 app.use(helmet({ contentSecurityPolicy: false })); // Disabled CSP for easy inline scripts
 app.use(cors());
 app.use(compression());
@@ -42,9 +44,8 @@ app.use(session({
     name: 'session',
     keys: [process.env.SESSION_SECRET || 'supersecret_api_learning'],
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    httpOnly: true
+    secure: process.env.NODE_ENV === 'production' || true,
+    sameSite: 'lax'
 }));
 
 // Static files
