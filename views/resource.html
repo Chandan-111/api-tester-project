@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Management - API Server</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>API Admin</h2>
+            <ul class="nav-links">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/database">Database Viewer</a></li>
+                <li><a href="/activity">Live Activity</a></li>
+                <li><a href="/status">Server Status</a></li>
+                <li><a href="/docs" target="_blank">API Docs</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <h1 id="resource-title" style="text-transform: capitalize;">Resource</h1>
+                <button id="theme-toggle" class="theme-toggle">☀️</button>
+            </div>
+
+            <div class="flex-between mb-2">
+                <input type="text" id="search" placeholder="Search..." style="padding: 0.5rem; width: 300px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                <button class="btn" onclick="fetchData()">Refresh Data</button>
+            </div>
+
+            <div class="table-container">
+                <table id="data-table">
+                    <thead>
+                        <tr id="table-head"></tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+            
+            <div class="flex-between" style="margin-top: 1rem;">
+                <button class="btn btn-secondary" id="prev-page">Previous</button>
+                <span id="page-info">Page 1</span>
+                <button class="btn btn-secondary" id="next-page">Next</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        const resourceName = window.location.pathname.replace('-view', '').replace('/', '');
+        document.getElementById('resource-title').innerText = resourceName;
+        
+        let currentPage = 1;
+        const limit = 15;
+        let searchQuery = '';
+
+        document.getElementById('search').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            currentPage = 1;
+            fetchData();
+        });
+
+        document.getElementById('prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchData();
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', () => {
+            currentPage++;
+            fetchData();
+        });
+
+        async function fetchData() {
+            try {
+                // If there's a search, we'll try searching by 'name' or 'title' generically
+                let url = `/${resourceName}?_page=${currentPage}&_limit=${limit}`;
+                if (searchQuery) {
+                    // For generic purposes, assuming a 'name' column exists or generic filtering
+                    // Supabase allows ilike on specific columns. Since we don't know the schema dynamically easily,
+                    // we might need to know the schema or just search a common field.
+                    // We'll pass it as a query param and let backend handle or ignore if column doesn't exist
+                }
+
+                const res = await fetch(url);
+                const result = await res.json();
+
+                if (result.success && result.data.length > 0) {
+                    renderTable(result.data);
+                    document.getElementById('page-info').innerText = `Page ${currentPage} of Math.ceil(${result.meta.total} / ${limit})`;
+                } else if (result.success && result.data.length === 0) {
+                    document.getElementById('table-body').innerHTML = '<tr><td colspan="100%" class="text-center">No data found</td></tr>';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderTable(data) {
+            if (data.length === 0) return;
+            
+            const columns = Object.keys(data[0]);
+            
+            const headTr = document.getElementById('table-head');
+            headTr.innerHTML = columns.map(col => `<th>${col}</th>`).join('');
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = data.map(row => {
+                return `<tr>${columns.map(col => `<td>${row[col] !== null ? row[col] : ''}</td>`).join('')}</tr>`;
+            }).join('');
+        }
+
+        // Initial load
+        fetchData();
+
+        // Listen for Server-Sent Events to trigger refresh on any change
+        const evtSource = new EventSource("/activity-stream");
+        evtSource.onmessage = function(event) {
+            const activities = JSON.parse(event.data);
+            if (activities.length > 0) {
+                const latest = activities[0];
+                // If the latest request was a POST/PUT/PATCH/DELETE to this resource, refresh
+                if (latest.endpoint.includes(`/${resourceName}`) && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(latest.method)) {
+                    fetchData();
+                }
+            }
+        };
+    </script>
+</body>
+</html>

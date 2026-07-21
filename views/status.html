@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Status - API Server</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>API Admin</h2>
+            <ul class="nav-links">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/database">Database Viewer</a></li>
+                <li><a href="/activity">Live Activity</a></li>
+                <li><a href="/status">Server Status</a></li>
+                <li><a href="/docs" target="_blank">API Docs</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <div class="topbar">
+                <h1>Server Status</h1>
+                <button id="theme-toggle" class="theme-toggle">☀️</button>
+            </div>
+            <div class="card-grid" id="status-grid">
+                <!-- Status items will be injected here -->
+            </div>
+        </main>
+    </div>
+    <script src="/js/main.js"></script>
+    <script>
+        async function checkStatus() {
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                
+                const grid = document.getElementById('status-grid');
+                grid.innerHTML = `
+                    <div class="card">
+                        <h3>Express Server</h3>
+                        <div class="value" style="color: #4caf50;">${data.data.server}</div>
+                    </div>
+                    <div class="card">
+                        <h3>Supabase</h3>
+                        <div class="value">${data.data.database}</div>
+                    </div>
+                    <div class="card">
+                        <h3>Uptime</h3>
+                        <div class="value">${Math.floor(data.data.uptime)}s</div>
+                    </div>
+                `;
+            } catch(e) {
+                console.error(e);
+            }
+        }
+        checkStatus();
+        setInterval(checkStatus, 5000);
+    </script>
+</body>
+</html>

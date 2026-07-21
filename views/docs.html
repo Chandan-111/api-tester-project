@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .endpoint-card {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        .endpoint-header {
+            padding: 1rem 1.5rem;
+            background: var(--bg-color);
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .endpoint-body {
+            padding: 1.5rem;
+        }
+        .code-example {
+            margin-top: 1rem;
+        }
+        .code-example pre {
+            position: relative;
+            margin-top: 0.5rem;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--primary-color);
+            color: var(--cream);
+            border: 2px solid var(--border-color);
+            padding: 0.25rem 0.75rem;
+            cursor: pointer;
+            font-family: var(--font-sans);
+            font-weight: bold;
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+        .copy-btn:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px var(--border-color);
+        }
+        h4 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-family: var(--font-sans);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="display: block; padding: 2rem; max-width: 1200px; margin: 0 auto;">
+        <div class="topbar">
+            <h1>API Documentation</h1>
+            <div class="flex">
+                <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+                <button id="theme-toggle" class="theme-toggle">☀️</button>
+            </div>
+        </div>
+
+        <p class="mb-2" style="font-size: 1.1rem;">Welcome to the API Learning Server Documentation. The base URL is your server's root URL (e.g., <code>http://localhost:3000</code>). All requests and responses use JSON.</p>
+        
+        <h2 class="mb-2 mt-2">Available Resources</h2>
+        <p class="mb-2">You can use any of these resource paths for the methods below: <br>
+        <code>/users</code>, <code>/products</code>, <code>/orders</code>, <code>/employees</code>, <code>/books</code>, <code>/students</code>, <code>/tasks</code></p>
+
+        <!-- GET ALL -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="badge get">GET</span>
+                <strong style="font-family: monospace; font-size: 1.2rem;">/[resource]</strong>
+            </div>
+            <div class="endpoint-body">
+                <p><strong>Description:</strong> Retrieve a list of records. Supports pagination, sorting, and filtering.</p>
+                <p class="mt-2"><strong>Query Parameters:</strong><br>
+                <code>?_limit=10</code> (Max records to return)<br>
+                <code>?_page=1</code> (Page number)<br>
+                <code>?_sort=id&_order=desc</code> (Sorting)</p>
+                
+                <h4>Example Request (JavaScript Fetch)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>fetch('http://localhost:3000/users?_limit=2')
+  .then(res => res.json())
+  .then(console.log);</code></pre>
+                </div>
+                
+                <h4>Example Response JSON</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "success": true,
+  "message": "users fetched successfully",
+  "data": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "created_at": "2023-10-25T12:00:00Z"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "created_at": "2023-10-25T12:05:00Z"
+    }
+  ],
+  "meta": { "total": 15, "page": 1, "limit": 2 }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- GET BY ID -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="badge get">GET</span>
+                <strong style="font-family: monospace; font-size: 1.2rem;">/[resource]/:id</strong>
+            </div>
+            <div class="endpoint-body">
+                <p><strong>Description:</strong> Retrieve a single record by its ID.</p>
+                
+                <h4>Example Request (cURL)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>curl http://localhost:3000/products/5</code></pre>
+                </div>
+                
+                <h4>Example Response JSON</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "success": true,
+  "message": "products fetched successfully",
+  "data": {
+    "id": 5,
+    "name": "USB-C Hub",
+    "price": 29.99,
+    "description": "7-in-1 port expansion",
+    "created_at": "2023-10-25T12:00:00Z"
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- POST -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="badge post">POST</span>
+                <strong style="font-family: monospace; font-size: 1.2rem;">/[resource]</strong>
+            </div>
+            <div class="endpoint-body">
+                <p><strong>Description:</strong> Create a new record.</p>
+                
+                <h4>Request Body (JSON)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "name": "Alex Johnson",
+  "email": "alex.j@example.com"
+}</code></pre>
+                </div>
+
+                <h4>Example Request (JavaScript Fetch)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>fetch('http://localhost:3000/users', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ 
+    name: 'Alex Johnson', 
+    email: 'alex.j@example.com' 
+  })
+})
+.then(res => res.json())
+.then(console.log);</code></pre>
+                </div>
+                
+                <h4>Example Response JSON (201 Created)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "success": true,
+  "message": "users created successfully",
+  "data": {
+    "id": 16,
+    "name": "Alex Johnson",
+    "email": "alex.j@example.com",
+    "created_at": "2023-10-26T08:30:00Z"
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- PUT -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="badge put">PUT</span>
+                <strong style="font-family: monospace; font-size: 1.2rem;">/[resource]/:id</strong>
+            </div>
+            <div class="endpoint-body">
+                <p><strong>Description:</strong> Replace/Update an entire record. (In this API, PUT and PATCH behave similarly).</p>
+                
+                <h4>Request Body (JSON)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "title": "Clean the garage and basement",
+  "completed": true
+}</code></pre>
+                </div>
+
+                <h4>Example Request (Power Automate / HTTP Action)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>Method: PUT
+URI: http://localhost:3000/tasks/8
+Headers: { "Content-Type": "application/json" }
+Body: 
+{
+  "title": "Clean the garage and basement",
+  "completed": true
+}</code></pre>
+                </div>
+                
+                <h4>Example Response JSON</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "success": true,
+  "message": "tasks updated successfully",
+  "data": {
+    "id": 8,
+    "title": "Clean the garage and basement",
+    "completed": true,
+    "created_at": "2023-10-25T12:00:00Z"
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PATCH -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="badge patch">PATCH</span>
+                <strong style="font-family: monospace; font-size: 1.2rem;">/[resource]/:id</strong>
+            </div>
+            <div class="endpoint-body">
+                <p><strong>Description:</strong> Partially update a record. Only send the fields you want to change.</p>
+                
+                <h4>Request Body (JSON)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "price": 899.99
+}</code></pre>
+                </div>
+
+                <h4>Example Request (Axios)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>axios.patch('http://localhost:3000/products/6', {
+  price: 899.99
+}).then(response => console.log(response.data));</code></pre>
+                </div>
+                
+                <h4>Example Response JSON</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "success": true,
+  "message": "products updated successfully",
+  "data": {
+    "id": 6,
+    "name": "Smartphone",
+    "price": 899.99,
+    "description": "Latest model smartphone",
+    "created_at": "2023-10-25T12:00:00Z"
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- DELETE -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="badge delete">DELETE</span>
+                <strong style="font-family: monospace; font-size: 1.2rem;">/[resource]/:id</strong>
+            </div>
+            <div class="endpoint-body">
+                <p><strong>Description:</strong> Delete a record by ID.</p>
+                
+                <h4>Example Request (Python Requests)</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>import requests
+response = requests.delete('http://localhost:3000/books/15')
+print(response.status_code)</code></pre>
+                </div>
+                
+                <h4>Example Response</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>Status: 204 No Content
+(Body is empty)</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- UTILITY ENDPOINTS -->
+        <h2 class="mb-2 mt-2">Utility & Error Endpoints</h2>
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="badge get">GET</span>
+                <strong style="font-family: monospace; font-size: 1.2rem;">/health</strong>
+            </div>
+            <div class="endpoint-body">
+                <p>Check server health and database connection.</p>
+            </div>
+        </div>
+
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="badge get">GET</span>
+                <strong style="font-family: monospace; font-size: 1.2rem;">/error/500</strong>
+            </div>
+            <div class="endpoint-body">
+                <p>Simulate a 500 Internal Server Error for testing error handling in your client. You can replace <code>500</code> with any common status code (400, 401, 403, 404, 409, 422, etc.).</p>
+                
+                <h4>Example Response JSON</h4>
+                <div class="code-example">
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copy</button><code>{
+  "success": false,
+  "message": "Internal Server Error",
+  "errors": [
+    "Simulated 500 error"
+  ]
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        function copyCode(btn) {
+            const code = btn.nextElementSibling.innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const oldText = btn.innerText;
+                btn.innerText = 'Copied!';
+                setTimeout(() => btn.innerText = oldText, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

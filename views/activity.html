@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Activity - API Server</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>API Admin</h2>
+            <ul class="nav-links">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/database">Database Viewer</a></li>
+                <li><a href="/activity">Live Activity</a></li>
+                <li><a href="/status">Server Status</a></li>
+                <li><a href="/docs" target="_blank">API Docs</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <h1>Live API Activity</h1>
+                <button id="theme-toggle" class="theme-toggle">☀️</button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Status</th>
+                            <th>Time (ms)</th>
+                            <th>Client</th>
+                            <th>IP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-log">
+                        <!-- Populated by SSE -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script>
+        const evtSource = new EventSource("/activity-stream");
+        const tbody = document.getElementById('activity-log');
+        
+        evtSource.onmessage = function(event) {
+            const activities = JSON.parse(event.data);
+            tbody.innerHTML = '';
+            
+            activities.forEach(act => {
+                const tr = document.createElement('tr');
+                
+                // Badge for method
+                let methodClass = act.method.toLowerCase();
+                
+                // Badge for status
+                let statusClass = '200';
+                if(act.statusCode >= 400 && act.statusCode < 500) statusClass = '400';
+                if(act.statusCode >= 500) statusClass = '500';
+                
+                tr.innerHTML = `
+                    <td>${new Date(act.timestamp).toLocaleTimeString()}</td>
+                    <td><span class="badge ${methodClass}">${act.method}</span></td>
+                    <td>${act.endpoint}</td>
+                    <td><span class="badge status-${statusClass}">${act.statusCode || '...'}</span></td>
+                    <td>${act.responseTime || '...'}</td>
+                    <td>${act.clientName}</td>
+                    <td>${act.ip}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+    </script>
+</body>
+</html>

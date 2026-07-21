@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Viewer - API Server</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>API Admin</h2>
+            <ul class="nav-links">
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/database">Database Viewer</a></li>
+                <li><a href="/activity">Live Activity</a></li>
+                <li><a href="/status">Server Status</a></li>
+                <li><a href="/docs" target="_blank">API Docs</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <div class="topbar">
+                <h1>Database Viewer</h1>
+                <button id="theme-toggle" class="theme-toggle">☀️</button>
+            </div>
+            <p class="mb-2">This page provides a raw view of all Supabase tables. Data editing is restricted to REST APIs.</p>
+            
+            <div class="form-group">
+                <label>Select Table</label>
+                <select id="table-select">
+                    <option value="users">Users</option>
+                    <option value="products">Products</option>
+                    <option value="orders">Orders</option>
+                    <option value="employees">Employees</option>
+                    <option value="books">Books</option>
+                    <option value="students">Students</option>
+                    <option value="tasks">Tasks</option>
+                </select>
+            </div>
+            
+            <div class="table-container mt-2">
+                <table id="db-table">
+                    <thead><tr id="db-head"></tr></thead>
+                    <tbody id="db-body"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    <script src="/js/main.js"></script>
+    <script>
+        const tableSelect = document.getElementById('table-select');
+        
+        tableSelect.addEventListener('change', fetchTableData);
+        
+        async function fetchTableData() {
+            const table = tableSelect.value;
+            try {
+                const res = await fetch(`/${table}?_limit=100`);
+                const result = await res.json();
+                
+                if (result.success && result.data.length > 0) {
+                    const columns = Object.keys(result.data[0]);
+                    document.getElementById('db-head').innerHTML = columns.map(c => `<th>${c}</th>`).join('');
+                    document.getElementById('db-body').innerHTML = result.data.map(row => 
+                        `<tr>${columns.map(c => `<td>${row[c]}</td>`).join('')}</tr>`
+                    ).join('');
+                } else {
+                    document.getElementById('db-head').innerHTML = '<th>Notice</th>';
+                    document.getElementById('db-body').innerHTML = '<tr><td>No data available in this table</td></tr>';
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+        
+        fetchTableData();
+        
+        // Auto refresh
+        const evtSource = new EventSource("/activity-stream");
+        evtSource.onmessage = function() {
+            fetchTableData();
+        };
+    </script>
+</body>
+</html>
